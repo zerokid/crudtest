@@ -20,20 +20,20 @@ import com.axiata.rest.service.CustomerService;
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
-	
+
 	final static Logger logger = Logger.getLogger(CustomerController.class);
 
-	
+
 	@Autowired
 	CustomerService customerService;
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
 		customer = customerService.save(customer);
 		logger.debug("Added:: " + customer);
 		return new ResponseEntity<Customer>(customer,HttpStatus.CREATED);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.PUT)
 	public ResponseEntity<Void> updateEmployee(@RequestBody Customer customer) {
 		Customer existingEmp = customerService.getById(customer.getId());
@@ -45,7 +45,7 @@ public class CustomerController {
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Customer>> getAllCustomer() {
 		List<Customer> customers = customerService.getAll();
@@ -58,7 +58,7 @@ public class CustomerController {
 		logger.debug(Arrays.toString(customers.toArray()));
 		return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Customer> getCustomer(@PathVariable("id") Long id){
 		Customer customer = customerService.getById(id);
@@ -68,6 +68,19 @@ public class CustomerController {
 		}
 		return new ResponseEntity<Customer>(customer,HttpStatus.OK);
 	}
-	
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
+		Customer customer = customerService.getById(id);
+		if (customer == null) {
+			logger.debug("Employee with id " + id + " does not exists");
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		} else {
+			customerService.delete(id);
+			logger.debug("Employee with id " + id + " deleted");
+			return new ResponseEntity<Void>(HttpStatus.GONE);
+		}
+	}
+
 
 }
